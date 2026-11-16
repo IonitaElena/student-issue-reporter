@@ -14,3 +14,10 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+
+jwt:
+  secret: ${JWT_SECRET:dev-only-secret-key-change-me-0123456789abcdef}
+  expiration-ms: 86400000
+
+app:
+  admin-registration-enabled: true

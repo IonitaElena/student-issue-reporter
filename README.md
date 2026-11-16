@@ -40,6 +40,7 @@ student-issue-reporter/
 | Python | 3.11 |
 | Docker Desktop | 29.x |
 | Editor | VS Code (Extension Pack for Java, Spring Boot Extension Pack, Python, Docker, ESLint, Prettier) |
+| Testare API | Postman (cererile se păstrează doar în aplicație) |
 
 Pe mașina de dezvoltare `java` din PATH este JDK 25, deci pentru Maven se setează JDK 21 în fiecare terminal nou:
 
@@ -79,6 +80,12 @@ docker exec -it user-db psql -U postgres -d user_db
 
 Comenzi utile: `\dt` (tabele), `\d users` (structură), `\q` (ieșire).
 
+Exemplu de verificare a utilizatorilor:
+
+```powershell
+docker exec -it user-db psql -U postgres -d user_db -c "SELECT id, email, role FROM users;"
+```
+
 Resetare completă a bazelor (șterge datele): `docker compose down -v`.
 
 ### 3. User Service
@@ -89,4 +96,51 @@ $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot"
 .\mvnw spring-boot:run
 ```
 
-Rulează pe `http://localhost:8081`.
+Rulează pe `http://localhost:8081`. Se oprește cu `Ctrl+C`.
+
+Configurare (`src/main/resources/application.yaml`):
+
+| Setare | Rol |
+|---|---|
+| `spring.datasource.*` | conexiune la `user-db` (port 5433); parola din `DB_PASSWORD` |
+| `jwt.secret` | cheia de semnare JWT (min. 32 caractere); în producție din `JWT_SECRET` |
+| `jwt.expiration-ms` | valabilitatea tokenului (86400000 = 24 h) |
+| `app.admin-registration-enabled` | permite înregistrarea de administratori (`true` doar în dezvoltare) |
+
+## API User Service
+
+| Metodă | Endpoint | Descriere |
+|---|---|---|
+| POST | `/auth/register` | creează cont, returnează JWT |
+| POST | `/auth/login` | autentificare, returnează JWT |
+
+Exemplu `POST /auth/register`:
+
+```json
+{
+  "email": "elena@stud.acs.upb.ro",
+  "password": "parola1234",
+  "firstName": "Elena",
+  "lastName": "Ioniță"
+}
+```
+
+Răspuns: `token`, `userId`, `email`, `role`.
+
+### Reguli de înregistrare
+
+- **Student:** email `nume@stud.<facultate>.upb.ro` (ex. `stud.acs.upb.ro`, `stud.etti.upb.ro`), rol `STUDENT`
+- **Administrator:** email `nume@upb.ro`, rol `ADMIN`, doar dacă `app.admin-registration-enabled` este `true`
+- Parola: minim 8 caractere, stocată ca hash BCrypt
+- Coduri de răspuns: `201` creat, `400` date invalide sau email neinstituțional, `401` login greșit, `403` înregistrare admin dezactivată, `409` email deja folosit
+
+JWT-ul conține: `sub` (email), `userId`, `role`, `iat`, `exp`.
+
+## Testare cu Postman
+
+1. Pornește bazele de date și User Service.
+2. Cerere `POST http://localhost:8081/auth/register`, Body > raw > JSON.
+3. Cerere `POST http://localhost:8081/auth/login`.
+4. Tokenul se poate inspecta pe jwt.io.
+
+
