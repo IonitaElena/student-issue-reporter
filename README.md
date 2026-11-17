@@ -4,13 +4,14 @@ Platformă inteligentă de e-Guvernare universitară pentru raportarea problemel
 
 ## Arhitectură
 
-- **Frontend:** React (folderul `frontend/`)
+- **Aplicație mobilă (studenți):** React Native + Expo (folderul `mobile/`, planificat)
+- **Aplicație web (administratori):** React + Vite (folderul `web-admin/`, planificat)
 - **Backend:** microservicii Spring Boot (folderul `backend/`)
   - `api-gateway`: punct unic de acces, validare JWT
   - `user-service`: autentificare, utilizatori, roluri
-  - `complaint-service`: sesizări, voturi, comentarii
-  - `ai-service`: clasificare, prioritizare, duplicate (Python)
-  - `analytics-notification-service`: statistici, notificări, rapoarte PDF
+  - `complaint-service`: sesizări, status, voturi, comentarii
+  - `ai-service`: clasificare, prioritizare, duplicate (Python, planificat)
+  - `analytics-notification-service`: statistici, notificări, rapoarte PDF (planificat)
 - **Baze de date:** PostgreSQL, câte una per serviciu (*Database per Service*)
 - **Containerizare:** Docker Compose
 
@@ -19,12 +20,14 @@ Platformă inteligentă de e-Guvernare universitară pentru raportarea problemel
 ```
 student-issue-reporter/
 ├── backend/
+│   ├── pom.xml                 (agregator Maven, pentru VS Code)
 │   ├── api-gateway/
 │   ├── user-service/
 │   ├── complaint-service/
 │   ├── ai-service/
 │   └── analytics-notification-service/
-├── frontend/
+├── mobile/
+├── web-admin/
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
@@ -48,17 +51,27 @@ Pe mașina de dezvoltare `java` din PATH este JDK 25, deci pentru Maven se setea
 $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot"
 ```
 
-## Rulare locală
+## Configurare și secrete
 
-### 1. Variabile de mediu
+Toate valorile secrete stau în `.env` din rădăcina repo-ului (ignorat de Git). `.env.example` conține doar valori de exemplu.
 
 ```powershell
 copy .env.example .env
 ```
 
-Apoi se setează `POSTGRES_PASSWORD` în `.env` (fișierul nu se urcă în Git).
+Variabile:
 
-### 2. Bazele de date
+| Variabilă | Rol |
+|---|---|
+| `POSTGRES_USER`, `POSTGRES_PASSWORD` | utilizator și parolă pentru bazele de date |
+| `USER_DB_NAME`, `COMPLAINT_DB_NAME`, `AI_DB_NAME`, `ANALYTICS_DB_NAME` | numele bazelor |
+| `JWT_SECRET` | cheia de semnare JWT (minim 32 de caractere), **identică** pentru gateway și user-service |
+
+Serviciile Spring citesc `.env` prin `spring.config.import: optional:file:../../.env[.properties]` (cale relativă la `backend/<serviciu>`), deci trebuie pornite din folderul serviciului. Nu există valori implicite pentru parole sau secrete: dacă o variabilă lipsește, serviciul nu pornește (`Could not resolve placeholder`). Alternativ, variabilele pot fi setate în terminal (`$env:JWT_SECRET = "..."`).
+
+## Rulare locală
+
+### 1. Bazele de date
 
 ```powershell
 docker compose up -d
@@ -72,49 +85,76 @@ docker compose ps
 | ai-db | 5435 | ai_db |
 | analytics-db | 5436 | analytics_db |
 
-Acces în consola SQL:
-
-```powershell
-docker exec -it user-db psql -U postgres -d user_db
-```
-
-Comenzi utile: `\dt` (tabele), `\d users` (structură), `\q` (ieșire).
-
-Exemplu de verificare a utilizatorilor:
-
-```powershell
-docker exec -it user-db psql -U postgres -d user_db -c "SELECT id, email, role FROM users;"
-```
-
 Resetare completă a bazelor (șterge datele): `docker compose down -v`.
 
-### 3. User Service
+### 2. Serviciile backend
+
+Fiecare serviciu rulează ca proces separat, într-un terminal separat:
 
 ```powershell
-cd backend\user-service
+cd backend\user-service        # apoi complaint-service, apoi api-gateway
 $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot"
 .\mvnw spring-boot:run
 ```
 
-Rulează pe `http://localhost:8081`. Se oprește cu `Ctrl+C`.
+Ordine recomandată: bazele de date, `user-service`, `complaint-service`, `api-gateway`. Un serviciu se oprește cu `Ctrl+C`.
 
-Configurare (`src/main/resources/application.yaml`):
-
-| Setare | Rol |
+| Componentă | Port |
 |---|---|
-| `spring.datasource.*` | conexiune la `user-db` (port 5433); parola din `DB_PASSWORD` |
-| `jwt.secret` | cheia de semnare JWT (min. 32 caractere); în producție din `JWT_SECRET` |
-| `jwt.expiration-ms` | valabilitatea tokenului (86400000 = 24 h) |
-| `app.admin-registration-enabled` | permite înregistrarea de administratori (`true` doar în dezvoltare) |
+| API Gateway | 8080 |
+| user-service | 8081 |
+| complaint-service | 8082 |
 
-## API User Service
+Mesaje de succes: `Successfully applied N migration(s)` (Flyway) și `Started ...Application`.
 
-| Metodă | Endpoint | Descriere |
-|---|---|---|
-| POST | `/auth/register` | creează cont, returnează JWT |
-| POST | `/auth/login` | autentificare, returnează JWT |
+### Pornire rapidă (opțional)
 
-Exemplu `POST /auth/register`:
+Script `start-backend.ps1` în rădăcină, care pornește bazele de date și deschide câte o fereastră per serviciu:
+
+```powershell
+.\start-backend.ps1
+```
+
+## Vizualizarea datelor din baze
+
+```powershell
+docker exec -it complaint-db psql -U postgres -d complaint_db -c "SELECT id, title, category, status, priority, faculty FROM complaints;"
+docker exec -it user-db psql -U postgres -d user_db -c "SELECT id, email, role FROM users;"
+```
+
+Mod interactiv: `docker exec -it complaint-db psql -U postgres -d complaint_db`, apoi `\dt` (tabele), `\d complaints` (structură), `\x` (afișare verticală), `\q` (ieșire).
+
+## API Gateway
+
+Punctul unic de acces către backend (Spring Cloud Gateway, varianta WebMVC). Clienții vorbesc doar cu el, nu direct cu serviciile.
+
+- **Rutare:** `/api/auth/**` și `/api/users/**` către `user-service`, `/api/complaints/**` către `complaint-service`; prefixul `/api` este eliminat (`StripPrefix=1`)
+- **Autentificare:** validează JWT-ul (`Authorization: Bearer <token>`); doar `/api/auth/**` este public
+- **Identitate:** după validare adaugă headerele `X-User-Id`, `X-User-Email`, `X-User-Role`, citite de servicii fără alte verificări. Headerele cu aceste nume trimise de client sunt suprascrise
+- **CORS:** permite originea web-admin (`app.cors.allowed-origins`, implicit `http://localhost:5173`); aplicația mobilă nativă nu are nevoie de CORS
+
+| Fișier (`backend/api-gateway`) | Rol |
+|---|---|
+| `application.yaml` | rute, `jwt.secret`, CORS |
+| `security/JwtAuthFilter.java` | validare JWT, răspuns `401` |
+| `security/IdentityHeaderRequest.java` | suprascrie headerele de identitate |
+| `config/CorsConfig.java` | configurare CORS |
+
+Răspunsuri ale gateway-ului: `401` cu „Token lipsă" sau „Token invalid sau expirat".
+
+## API
+
+Toate cererile se trimit **prin gateway** (`http://localhost:8080/api/...`).
+
+### User Service
+
+| Metodă | Endpoint | Acces | Descriere |
+|---|---|---|---|
+| POST | `/api/auth/register` | public | creează cont, returnează JWT |
+| POST | `/api/auth/login` | public | autentificare, returnează JWT |
+| GET | `/api/users/me` | token | datele utilizatorului logat |
+
+Exemplu `POST /api/auth/register`:
 
 ```json
 {
@@ -125,46 +165,63 @@ Exemplu `POST /auth/register`:
 }
 ```
 
-Răspuns: `token`, `userId`, `email`, `role`.
-
-### Reguli de înregistrare
-
-- **Student:** email `nume@stud.<facultate>.upb.ro` (ex. `stud.acs.upb.ro`, `stud.etti.upb.ro`), rol `STUDENT`
+Reguli de înregistrare:
+- **Student:** email `nume@stud.<facultate>.upb.ro` (ex. `stud.acs.upb.ro`), rol `STUDENT`
 - **Administrator:** email `nume@upb.ro`, rol `ADMIN`, doar dacă `app.admin-registration-enabled` este `true`
 - Parola: minim 8 caractere, stocată ca hash BCrypt
-- Coduri de răspuns: `201` creat, `400` date invalide sau email neinstituțional, `401` login greșit, `403` înregistrare admin dezactivată, `409` email deja folosit
+- Coduri: `201` creat, `400` date invalide sau email neinstituțional, `401` login greșit, `403` înregistrare admin dezactivată, `409` email deja folosit
 
-JWT-ul conține: `sub` (email), `userId`, `role`, `iat`, `exp`.
+JWT-ul conține: `sub` (email), `userId`, `role`, `iat`, `exp` (valabil 24 h).
 
-### 4. API Gateway
+### Complaint Service
 
-```powershell
-cd backend\api-gateway
-$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot"
-.\mvnw spring-boot:run
+| Metodă | Endpoint | Descriere |
+|---|---|---|
+| POST | `/api/complaints` | creează o sesizare (utilizatorul din token) |
+| GET | `/api/complaints` | listă paginată, cu filtre `category`, `status`, `faculty`, `dormitory`, `page`, `size` |
+| GET | `/api/complaints/my` | sesizările utilizatorului logat |
+| GET | `/api/complaints/{id}` | detaliile unei sesizări |
+
+Exemplu `POST /api/complaints`:
+
+```json
+{
+  "title": "Proiector defect în sala AN 031",
+  "description": "Proiectorul nu pornește de două săptămâni.",
+  "category": "INFRASTRUCTURE",
+  "building": "Corp A",
+  "locationText": "Sala AN 031",
+  "latitude": 44.4388,
+  "longitude": 26.0505
+}
 ```
 
-Rulează pe `http://localhost:8080`. Pornesc după `user-service`.
+Model de date (`complaints`):
 
-### Porturi
-
-| Componentă | Port |
+| Câmp | Detalii |
 |---|---|
-| API Gateway | 8080 |
-| user-service | 8081 |
-| complaint-service (planificat) | 8082 |
-| user-db / complaint-db / ai-db / analytics-db | 5433 / 5434 / 5435 / 5436 |
+| `category` | `ADMINISTRATIVE`, `INFRASTRUCTURE`, `ACADEMIC`, `SOCIAL`, `DORMITORY`, `OTHER` |
+| `status` | `NEW` (implicit), `IN_PROGRESS`, `RESOLVED`, `REJECTED` |
+| `priority` | `LOW`, `MEDIUM` (implicit, va fi estimată de AI Service), `HIGH`, `URGENT` |
+| `userId` | din headerul `X-User-Id`; fără foreign key (altă bază de date) |
+| `faculty` | dedusă din emailul studentului (`stud.acs.upb.ro` dă `acs`) |
+| `dormitory`, `building`, `locationText`, `latitude`, `longitude` | locația sesizării |
+| `assignedDepartment` | departamentul către care este redirecționată (de completat de administrator) |
+| `createdAt`, `updatedAt`, `resolvedAt` | date de urmărire |
+
+Structura codului (`backend/complaint-service`): `model` (entități și enum-uri), `repository`, `dto`, `service` (logica de business, filtrare cu `Specification`), `controller`. Migrările Flyway sunt în `src/main/resources/db/migration` (`V1__create_complaints_table.sql`). Serviciul nu folosește Spring Security: identitatea vine din headerele puse de gateway.
 
 ## Testare cu Postman
 
-De acum cererile se trimit **prin gateway** (`8080`, cu prefixul `/api`), nu direct la servicii:
-
 1. `POST http://localhost:8080/api/auth/login` (body JSON cu `email` și `password`); se copiază valoarea din `token`
 2. Pentru cereri protejate: tab-ul **Authorization** > **Bearer Token** > se lipește tokenul
-3. `GET http://localhost:8080/api/users/me` returnează datele utilizatorului logat
+3. `POST http://localhost:8080/api/complaints` creează o sesizare, `GET /api/complaints` o listează
 
 | Cerere | Rezultat așteptat |
 |---|---|
 | protejată, fără token | `401` „Token lipsă" |
 | `Bearer abc` | `401` „Token invalid sau expirat" |
-| token valid | `200` |
+| token valid | `200` / `201` |
+| sesizare cu `title` gol sau `category` inexistentă | `400` |
+
+Notă: la schimbarea `JWT_SECRET`, tokenurile vechi devin invalide (se face login din nou).
