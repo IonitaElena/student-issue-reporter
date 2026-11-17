@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: user-service-auth
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - StripPrefix=1
+            - id: user-service-users
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/users/**
+              filters:
+                - StripPrefix=1
+            # mai târziu:
+            # - id: complaint-service
+            #   uri: http://localhost:8082
+            #   predicates:
+            #     - Path=/api/complaints/**
+            #   filters:
+            #     - StripPrefix=1
+
+jwt:
+  secret: ${JWT_SECRET:dev-only-secret-key-change-me-0123456789abcdef}
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173

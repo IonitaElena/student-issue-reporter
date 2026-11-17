@@ -136,11 +136,35 @@ Răspuns: `token`, `userId`, `email`, `role`.
 
 JWT-ul conține: `sub` (email), `userId`, `role`, `iat`, `exp`.
 
+### 4. API Gateway
+
+```powershell
+cd backend\api-gateway
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot"
+.\mvnw spring-boot:run
+```
+
+Rulează pe `http://localhost:8080`. Pornesc după `user-service`.
+
+### Porturi
+
+| Componentă | Port |
+|---|---|
+| API Gateway | 8080 |
+| user-service | 8081 |
+| complaint-service (planificat) | 8082 |
+| user-db / complaint-db / ai-db / analytics-db | 5433 / 5434 / 5435 / 5436 |
+
 ## Testare cu Postman
 
-1. Pornește bazele de date și User Service.
-2. Cerere `POST http://localhost:8081/auth/register`, Body > raw > JSON.
-3. Cerere `POST http://localhost:8081/auth/login`.
-4. Tokenul se poate inspecta pe jwt.io.
+De acum cererile se trimit **prin gateway** (`8080`, cu prefixul `/api`), nu direct la servicii:
 
+1. `POST http://localhost:8080/api/auth/login` (body JSON cu `email` și `password`); se copiază valoarea din `token`
+2. Pentru cereri protejate: tab-ul **Authorization** > **Bearer Token** > se lipește tokenul
+3. `GET http://localhost:8080/api/users/me` returnează datele utilizatorului logat
 
+| Cerere | Rezultat așteptat |
+|---|---|
+| protejată, fără token | `401` „Token lipsă" |
+| `Bearer abc` | `401` „Token invalid sau expirat" |
+| token valid | `200` |
