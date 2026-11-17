@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: api-gateway
+  config:
+    import: optional:file:../../.env[.properties]
   cloud:
     gateway:
       server:
@@ -21,16 +23,15 @@ spring:
                 - Path=/api/users/**
               filters:
                 - StripPrefix=1
-            # mai târziu:
-            # - id: complaint-service
-            #   uri: http://localhost:8082
-            #   predicates:
-            #     - Path=/api/complaints/**
-            #   filters:
-            #     - StripPrefix=1
+            - id: complaint-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/complaints/**
+              filters:
+                - StripPrefix=1
 
 jwt:
-  secret: ${JWT_SECRET:dev-only-secret-key-change-me-0123456789abcdef}
+  secret: ${JWT_SECRET}
 
 app:
   cors:

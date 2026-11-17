@@ -4,10 +4,12 @@ server:
 spring:
   application:
     name: user-service
+  config:
+    import: optional:file:../../.env[.properties]
   datasource:
-    url: jdbc:postgresql://localhost:5433/user_db
-    username: postgres
-    password: ${DB_PASSWORD:elena}
+    url: jdbc:postgresql://localhost:5433/${USER_DB_NAME}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -16,7 +18,7 @@ spring:
     enabled: true
 
 jwt:
-  secret: ${JWT_SECRET:dev-only-secret-key-change-me-0123456789abcdef}
+  secret: ${JWT_SECRET}
   expiration-ms: 86400000
 
 app:
