@@ -1,8 +1,6 @@
 package com.studentissue.complaint_service.controller;
 
-import com.studentissue.complaint_service.dto.ComplaintResponse;
-import com.studentissue.complaint_service.dto.CreateComplaintRequest;
-import com.studentissue.complaint_service.dto.PageResponse;
+import com.studentissue.complaint_service.dto.*;
 import com.studentissue.complaint_service.model.Category;
 import com.studentissue.complaint_service.model.Status;
 import com.studentissue.complaint_service.service.ComplaintService;
@@ -49,5 +47,18 @@ public class ComplaintController {
     @GetMapping("/{id}")
     public ComplaintResponse get(@PathVariable Long id) {
         return service.getById(id);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ComplaintResponse updateStatus(@PathVariable Long id,
+                                          @RequestHeader("X-User-Id") Long adminId,
+                                          @RequestHeader("X-User-Role") String role,
+                                          @Valid @RequestBody UpdateStatusRequest request) {
+        return service.updateStatus(id, adminId, role, request);
+    }
+
+    @GetMapping("/{id}/history")
+    public List<StatusHistoryResponse> history(@PathVariable Long id) {
+        return service.getHistory(id);
     }
 }
