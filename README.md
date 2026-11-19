@@ -9,7 +9,7 @@ Platformă inteligentă de e-Guvernare universitară pentru raportarea problemel
 - **Backend:** microservicii Spring Boot (folderul `backend/`)
   - `api-gateway`: punct unic de acces, validare JWT
   - `user-service`: autentificare, utilizatori, roluri
-  - `complaint-service`: sesizări, status, voturi, comentarii
+  - `complaint-service`: sesizări, status, voturi, comentarii, imagini
   - `ai-service`: clasificare, prioritizare, duplicate (Python, planificat)
   - `analytics-notification-service`: statistici, notificări, rapoarte PDF (planificat)
 - **Baze de date:** PostgreSQL, câte una per serviciu (*Database per Service*)
@@ -29,6 +29,7 @@ student-issue-reporter/
 ├── mobile/
 ├── web-admin/
 ├── docker-compose.yml
+├── start-backend.ps1
 ├── .env.example
 └── README.md
 ```
@@ -69,7 +70,19 @@ Variabile:
 
 Serviciile Spring citesc `.env` prin `spring.config.import: optional:file:../../.env[.properties]` (cale relativă la `backend/<serviciu>`), deci trebuie pornite din folderul serviciului. Nu există valori implicite pentru parole sau secrete: dacă o variabilă lipsește, serviciul nu pornește (`Could not resolve placeholder`). Alternativ, variabilele pot fi setate în terminal (`$env:JWT_SECRET = "..."`).
 
+Setări specifice `complaint-service` (`application.yaml`):
+
+| Setare | Rol |
+|---|---|
+| `spring.web.error.include-message: always` | afișează motivul erorilor în răspuns (Spring Boot 4; **doar în dezvoltare**) |
+| `spring.servlet.multipart.max-file-size: 5MB` / `max-request-size: 6MB` | limite pentru încărcarea imaginilor |
+| `app.upload-dir: uploads` | folderul în care se salvează imaginile (ignorat de Git) |
+
+În `api-gateway`, `spring.servlet.multipart.enabled: false` este necesar pentru ca încărcările de fișiere să fie retransmise nealterate către servicii.
+
 ## Rulare locală
+
+**Docker Desktop trebuie pornit** (`Engine running`) înainte de orice altceva. Dacă nu este, comenzile `docker` și conexiunile la baze eșuează (`dockerDesktopLinuxEngine`, `Connection refused`).
 
 ### 1. Bazele de date
 
@@ -94,7 +107,7 @@ Fiecare serviciu rulează ca proces separat, într-un terminal separat:
 ```powershell
 cd backend\user-service        # apoi complaint-service, apoi api-gateway
 $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot"
-.\mvnw spring-boot:run
+.\mvnw clean spring-boot:run
 ```
 
 Ordine recomandată: bazele de date, `user-service`, `complaint-service`, `api-gateway`. Un serviciu se oprește cu `Ctrl+C`.
@@ -107,9 +120,11 @@ Ordine recomandată: bazele de date, `user-service`, `complaint-service`, `api-g
 
 Mesaje de succes: `Successfully applied N migration(s)` (Flyway) și `Started ...Application`.
 
-### Pornire rapidă (opțional)
+`clean` șterge `target/` înainte de pornire. E necesar când apare `Unresolved compilation problem`: VS Code compilează în fundal în același folder și poate lăsa clase generate fără dependențe.
 
-Script `start-backend.ps1` în rădăcină, care pornește bazele de date și deschide câte o fereastră per serviciu:
+### Pornire rapidă
+
+Scriptul `start-backend.ps1` (în rădăcină) pornește bazele de date, apoi `user-service`, `complaint-service` (așteaptă să asculte pe port) și la final `api-gateway`, fiecare într-o fereastră separată:
 
 ```powershell
 .\start-backend.ps1
@@ -124,6 +139,15 @@ docker exec -it user-db psql -U postgres -d user_db -c "SELECT id, email, role F
 
 Mod interactiv: `docker exec -it complaint-db psql -U postgres -d complaint_db`, apoi `\dt` (tabele), `\d complaints` (structură), `\x` (afișare verticală), `\q` (ieșire).
 
+Parolele nu pot fi citite din baza de date: se stochează doar hash BCrypt (`$2a$10$...`). Pentru un cont de test uitat, se poate seta o parolă nouă în dezvoltare:
+
+```powershell
+docker exec -it user-db psql -U postgres -d user_db -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+docker exec -it user-db psql -U postgres -d user_db -c "UPDATE users SET password_hash = crypt('parola1234', gen_salt('bf', 10)) WHERE email = 'ana@stud.acs.upb.ro';"
+```
+
+Tabelele `spatial_ref_sys` și schema `tiger` din `complaint_db` vin de la imaginea PostGIS și nu se modifică.
+
 ## API Gateway
 
 Punctul unic de acces către backend (Spring Cloud Gateway, varianta WebMVC). Clienții vorbesc doar cu el, nu direct cu serviciile.
@@ -135,7 +159,7 @@ Punctul unic de acces către backend (Spring Cloud Gateway, varianta WebMVC). Cl
 
 | Fișier (`backend/api-gateway`) | Rol |
 |---|---|
-| `application.yaml` | rute, `jwt.secret`, CORS |
+| `application.yaml` | rute, `jwt.secret`, CORS, multipart |
 | `security/JwtAuthFilter.java` | validare JWT, răspuns `401` |
 | `security/IdentityHeaderRequest.java` | suprascrie headerele de identitate |
 | `config/CorsConfig.java` | configurare CORS |
@@ -175,12 +199,16 @@ JWT-ul conține: `sub` (email), `userId`, `role`, `iat`, `exp` (valabil 24 h).
 
 ### Complaint Service
 
-| Metodă | Endpoint | Descriere |
-|---|---|---|
-| POST | `/api/complaints` | creează o sesizare (utilizatorul din token) |
-| GET | `/api/complaints` | listă paginată, cu filtre `category`, `status`, `faculty`, `dormitory`, `page`, `size` |
-| GET | `/api/complaints/my` | sesizările utilizatorului logat |
-| GET | `/api/complaints/{id}` | detaliile unei sesizări |
+#### Sesizări
+
+| Metodă | Endpoint | Acces | Descriere |
+|---|---|---|---|
+| POST | `/api/complaints` | token | creează o sesizare (utilizatorul din token) |
+| GET | `/api/complaints` | token | listă paginată, cu filtre `category`, `status`, `faculty`, `dormitory`, `page`, `size` |
+| GET | `/api/complaints/my` | token | sesizările utilizatorului logat |
+| GET | `/api/complaints/{id}` | token | detaliile unei sesizări |
+| PATCH | `/api/complaints/{id}/status` | `ADMIN` | schimbă statusul și, opțional, departamentul |
+| GET | `/api/complaints/{id}/history` | token | istoricul modificărilor de status |
 
 Exemplu `POST /api/complaints`:
 
@@ -196,7 +224,58 @@ Exemplu `POST /api/complaints`:
 }
 ```
 
-Model de date (`complaints`):
+Exemplu `PATCH /api/complaints/{id}/status`:
+
+```json
+{
+  "status": "IN_PROGRESS",
+  "comment": "Preluat de echipa IT",
+  "assignedDepartment": "Departament IT"
+}
+```
+
+Reguli: doar `ADMIN` poate schimba statusul (`403` pentru student); `resolvedAt` se completează la `RESOLVED` și se golește dacă sesizarea este redeschisă; `400` dacă statusul este deja cel curent și nu se indică un departament. Fiecare schimbare (inclusiv crearea) este înregistrată în `complaint_status_history`.
+
+#### Voturi
+
+| Metodă | Endpoint | Descriere |
+|---|---|---|
+| POST | `/api/complaints/{id}/votes` | votează sesizarea |
+| DELETE | `/api/complaints/{id}/votes` | retrage votul |
+| GET | `/api/complaints/{id}/votes` | `voteCount` și `votedByMe` |
+
+Reguli: un vot per utilizator și sesizare (constrângere unică în baza de date, `409` la repetare); nu se poate vota propria sesizare (`400`); retragerea unui vot inexistent dă `404`.
+
+#### Comentarii
+
+| Metodă | Endpoint | Descriere |
+|---|---|---|
+| POST | `/api/complaints/{id}/comments` | adaugă un comentariu (`{"content": "..."}`, max. 1000 caractere) |
+| GET | `/api/complaints/{id}/comments` | lista comentariilor, în ordine cronologică |
+| DELETE | `/api/complaints/{id}/comments/{commentId}` | șterge (autorul sau `ADMIN`; `403` altfel) |
+
+#### Imagini
+
+| Metodă | Endpoint | Descriere |
+|---|---|---|
+| POST | `/api/complaints/{id}/images` | încarcă o imagine (`multipart/form-data`, câmpul `file`; autorul sau `ADMIN`) |
+| GET | `/api/complaints/{id}/images` | lista imaginilor |
+| GET | `/api/complaints/{id}/images/{imageId}/content` | descarcă imaginea |
+| DELETE | `/api/complaints/{id}/images/{imageId}` | șterge imaginea (autorul sau `ADMIN`) |
+
+Reguli: JPEG, PNG sau WebP, verificate după conținut (primii octeți), nu după extensie sau `Content-Type`; maxim 5 MB (`413`) și 5 imagini per sesizare; fișierele se salvează în `uploads/` cu nume generat (UUID), iar numele original se păstrează doar în baza de date. La dockerizare, `uploads/` trebuie montat ca volum.
+
+#### Model de date
+
+| Tabel | Conținut |
+|---|---|
+| `complaints` | sesizările |
+| `complaint_status_history` | istoricul statusurilor (vechi, nou, autor, comentariu, dată) |
+| `complaint_votes` | voturile (unic pe `complaint_id` + `user_id`) |
+| `complaint_comments` | comentariile |
+| `complaint_images` | metadatele imaginilor |
+
+Câmpurile din `complaints`:
 
 | Câmp | Detalii |
 |---|---|
@@ -206,10 +285,19 @@ Model de date (`complaints`):
 | `userId` | din headerul `X-User-Id`; fără foreign key (altă bază de date) |
 | `faculty` | dedusă din emailul studentului (`stud.acs.upb.ro` dă `acs`) |
 | `dormitory`, `building`, `locationText`, `latitude`, `longitude` | locația sesizării |
-| `assignedDepartment` | departamentul către care este redirecționată (de completat de administrator) |
+| `assignedDepartment` | departamentul către care este redirecționată (completat de administrator) |
 | `createdAt`, `updatedAt`, `resolvedAt` | date de urmărire |
 
-Structura codului (`backend/complaint-service`): `model` (entități și enum-uri), `repository`, `dto`, `service` (logica de business, filtrare cu `Specification`), `controller`. Migrările Flyway sunt în `src/main/resources/db/migration` (`V1__create_complaints_table.sql`). Serviciul nu folosește Spring Security: identitatea vine din headerele puse de gateway.
+Structura codului (`backend/complaint-service`): `model` (entități și enum-uri), `repository`, `dto`, `service` (`ComplaintService`, `InteractionService` pentru voturi și comentarii, `ImageService`), `controller`. Migrările Flyway sunt în `src/main/resources/db/migration`:
+
+| Migrare | Conținut |
+|---|---|
+| `V1__create_complaints_table.sql` | tabela `complaints` |
+| `V2__create_status_history.sql` | istoricul statusurilor |
+| `V3__create_votes_and_comments.sql` | voturi și comentarii |
+| `V4__create_complaint_images.sql` | metadate imagini |
+
+Serviciul nu folosește Spring Security: identitatea (`X-User-Id`, `X-User-Email`, `X-User-Role`) vine din headerele puse de gateway, iar rolul `ADMIN` este verificat în logica de business.
 
 ## Testare cu Postman
 
@@ -223,5 +311,11 @@ Structura codului (`backend/complaint-service`): `model` (entități și enum-ur
 | `Bearer abc` | `401` „Token invalid sau expirat" |
 | token valid | `200` / `201` |
 | sesizare cu `title` gol sau `category` inexistentă | `400` |
+| `PATCH .../status` cu token de student | `403` |
+| vot pe propria sesizare | `400` |
+| al doilea vot al aceluiași utilizator | `409` |
+| încărcare imagine cu alt tip de fișier | `400` |
+
+Pentru voturi și comentarii sunt necesare două conturi de student (autorul nu își poate vota sesizarea), plus un cont `admin@upb.ro` pentru statusuri. Pentru încărcarea unei imagini: metoda **POST**, **Body** > **form-data**, cheia `file` cu tipul **File**.
 
 Notă: la schimbarea `JWT_SECRET`, tokenurile vechi devin invalide (se face login din nou).
