@@ -265,6 +265,17 @@ Reguli: un vot per utilizator și sesizare (constrângere unică în baza de dat
 
 Reguli: JPEG, PNG sau WebP, verificate după conținut (primii octeți), nu după extensie sau `Content-Type`; maxim 5 MB (`413`) și 5 imagini per sesizare; fișierele se salvează în `uploads/` cu nume generat (UUID), iar numele original se păstrează doar în baza de date. La dockerizare, `uploads/` trebuie montat ca volum.
 
+#### Hartă
+
+| Metodă | Endpoint | Descriere |
+|---|---|---|
+| GET | `/api/complaints/map` | markere în zona `minLat`, `minLng`, `maxLat`, `maxLng`; filtre opționale `category`, `status`, `limit` (implicit 200, maxim 500) |
+| GET | `/api/complaints/nearby` | markere în raza `radius` (metri, implicit 500, maxim 50000) în jurul punctului `lat`, `lng`, ordonate după distanță; aceleași filtre |
+
+Răspunsul conține, pentru fiecare sesizare cu coordonate: `id`, `title`, `category`, `status`, `priority`, `latitude`, `longitude`, `voteCount` și, la `/nearby`, `distanceMeters`. Sesizările fără coordonate nu apar pe hartă. Limitele greșite (latitudine în afara intervalului -90..90, `min` mai mare decât `max`, rază 0) dau `400`.
+
+Interogările folosesc PostGIS: coloana `complaints.location` (`geography(Point, 4326)`) este calculată automat din `latitude` și `longitude` și are index GiST.
+
 #### Model de date
 
 | Tabel | Conținut |
@@ -287,8 +298,9 @@ Câmpurile din `complaints`:
 | `dormitory`, `building`, `locationText`, `latitude`, `longitude` | locația sesizării |
 | `assignedDepartment` | departamentul către care este redirecționată (completat de administrator) |
 | `createdAt`, `updatedAt`, `resolvedAt` | date de urmărire |
+| `location` | coloană `geography(Point, 4326)` calculată din `latitude` și `longitude`, folosită la interogările pe hartă; nu se completează manual |
 
-Structura codului (`backend/complaint-service`): `model` (entități și enum-uri), `repository`, `dto`, `service` (`ComplaintService`, `InteractionService` pentru voturi și comentarii, `ImageService`), `controller`. Migrările Flyway sunt în `src/main/resources/db/migration`:
+Structura codului (`backend/complaint-service`): `model` (entități și enum-uri), `repository`, `dto`, `service` (`ComplaintService`, `InteractionService` pentru voturi și comentarii, `ImageService`, `MapService` pentru hartă), `controller`. Migrările Flyway sunt în `src/main/resources/db/migration`:
 
 | Migrare | Conținut |
 |---|---|
@@ -296,6 +308,7 @@ Structura codului (`backend/complaint-service`): `model` (entități și enum-ur
 | `V2__create_status_history.sql` | istoricul statusurilor |
 | `V3__create_votes_and_comments.sql` | voturi și comentarii |
 | `V4__create_complaint_images.sql` | metadate imagini |
+| `V5__add_complaint_location.sql` | coloana `location` (PostGIS) și indexul GiST |
 
 Serviciul nu folosește Spring Security: identitatea (`X-User-Id`, `X-User-Email`, `X-User-Role`) vine din headerele puse de gateway, iar rolul `ADMIN` este verificat în logica de business.
 
@@ -315,7 +328,12 @@ Serviciul nu folosește Spring Security: identitatea (`X-User-Id`, `X-User-Email
 | vot pe propria sesizare | `400` |
 | al doilea vot al aceluiași utilizator | `409` |
 | încărcare imagine cu alt tip de fișier | `400` |
+| `GET /api/complaints/map` cu limite valide | `200`, lista markerelor din zonă |
+| `GET /api/complaints/map` fără parametri sau cu `minLat` mai mare decât `maxLat` | `400` |
+| `GET /api/complaints/nearby?lat=44.4388&lng=26.0505&radius=1000` | `200`, ordonate după `distanceMeters` |
 
 Pentru voturi și comentarii sunt necesare două conturi de student (autorul nu își poate vota sesizarea), plus un cont `admin@upb.ro` pentru statusuri. Pentru încărcarea unei imagini: metoda **POST**, **Body** > **form-data**, cheia `file` cu tipul **File**.
+
+Pentru hartă este util să existe cel puțin două sesizări cu coordonate apropiate (de exemplu la 300 m una de alta) și una fără coordonate, care nu trebuie să apară în rezultate.
 
 Notă: la schimbarea `JWT_SECRET`, tokenurile vechi devin invalide (se face login din nou).
