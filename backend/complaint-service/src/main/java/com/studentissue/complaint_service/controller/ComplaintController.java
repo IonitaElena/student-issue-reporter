@@ -35,18 +35,19 @@ public class ComplaintController {
                                                 @RequestParam(required = false) String faculty,
                                                 @RequestParam(required = false) String dormitory,
                                                 @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "20") int size) {
-        return service.search(category, status, faculty, dormitory, page, size);
+                                                @RequestParam(defaultValue = "20") int size,
+                                                @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+        return service.search(category, status, faculty, dormitory, page, size, userId);
     }
-
     @GetMapping("/my")
     public List<ComplaintResponse> mine(@RequestHeader("X-User-Id") Long userId) {
         return service.getMine(userId);
     }
 
     @GetMapping("/{id}")
-    public ComplaintResponse get(@PathVariable Long id) {
-        return service.getById(id);
+    public ComplaintResponse get(@PathVariable Long id,
+                                 @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+        return service.getById(id, userId);
     }
 
     @PatchMapping("/{id}/status")

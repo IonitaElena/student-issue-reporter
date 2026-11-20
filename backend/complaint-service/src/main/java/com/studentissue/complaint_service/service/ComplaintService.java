@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.studentissue.complaint_service.repository.VoteRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class ComplaintService {
@@ -31,12 +34,14 @@ public class ComplaintService {
     private final ComplaintRepository repository;
     private final StatusHistoryRepository historyRepository;
     private final AiClient aiClient;
+    private final VoteRepository voteRepository;
 
     public ComplaintService(ComplaintRepository repository, StatusHistoryRepository historyRepository,
-                            AiClient aiClient) {
+                            AiClient aiClient, VoteRepository voteRepository) {
         this.repository = repository;
         this.historyRepository = historyRepository;
         this.aiClient = aiClient;
+        this.voteRepository = voteRepository;
     }
 
     @Transactional
@@ -132,7 +137,7 @@ public class ComplaintService {
     }
 
     public PageResponse<ComplaintResponse> search(Category category, Status status, String faculty,
-                                                  String dormitory, int page, int size) {
+                                                  String dormitory, int page, int size, Long userId) {
         Specification<Complaint> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (category != null) predicates.add(cb.equal(root.get("category"), category));
@@ -149,19 +154,33 @@ public class ComplaintService {
         Page<Complaint> result = repository.findAll(spec, pageRequest);
 
         return new PageResponse<>(
-                result.getContent().stream().map(ComplaintResponse::from).toList(),
+                enrich(result.getContent(), userId),
                 result.getNumber(), result.getSize(),
                 result.getTotalElements(), result.getTotalPages());
     }
 
-    public ComplaintResponse getById(Long id) {
-        return ComplaintResponse.from(repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sesizare inexistentă")));
+    public ComplaintResponse getById(Long id, Long userId) {
+        Complaint c = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sesizare inexistentă"));
+        return enrich(List.of(c), userId).get(0);
     }
 
     public List<ComplaintResponse> getMine(Long userId) {
-        return repository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(ComplaintResponse::from).toList();
+        return enrich(repository.findByUserIdOrderByCreatedAtDesc(userId), userId);
+    }
+
+    /** Adaugă numărul de voturi și "am votat eu" cu două interogări pentru toată lista. */
+    private List<ComplaintResponse> enrich(List<Complaint> complaints, Long userId) {
+        if (complaints.isEmpty()) return List.of();
+        List<Long> ids = complaints.stream().map(Complaint::getId).toList();
+
+        Map<Long, Long> counts = new HashMap<>();
+        voteRepository.countByComplaintIds(ids).forEach(v -> counts.put(v.getComplaintId(), v.getCnt()));
+        Set<Long> voted = userId == null
+                ? Set.of() : new HashSet<>(voteRepository.findVotedComplaintIds(userId, ids));
+
+        return complaints.stream()
+                .map(c -> ComplaintResponse.from(c, counts.getOrDefault(c.getId(), 0L), voted.contains(c.getId()))).toList();
     }
 
     public List<SimilarComplaintResponse> findSimilar(Long id) {
