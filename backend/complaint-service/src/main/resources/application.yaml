@@ -26,3 +26,7 @@ spring:
 
 app:
   upload-dir: uploads
+
+ai:
+  service-url: http://localhost:8083
+  timeout-ms: 2000

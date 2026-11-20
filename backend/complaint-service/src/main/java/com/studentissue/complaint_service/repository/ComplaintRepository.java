@@ -6,13 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.studentissue.complaint_service.model.Status;
 
 import java.util.List;
+import java.util.Collection;
 
 public interface ComplaintRepository
         extends JpaRepository<Complaint, Long>, JpaSpecificationExecutor<Complaint> {
 
     List<Complaint> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<Complaint> findTop200ByStatusInAndIdNotOrderByCreatedAtDesc(Collection<Status> statuses, Long id);
 
     @Query(value = """
             SELECT c.id AS "id", c.title AS "title", c.category AS "category",

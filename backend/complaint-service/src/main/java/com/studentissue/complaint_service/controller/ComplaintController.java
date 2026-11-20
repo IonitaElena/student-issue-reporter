@@ -61,4 +61,9 @@ public class ComplaintController {
     public List<StatusHistoryResponse> history(@PathVariable Long id) {
         return service.getHistory(id);
     }
+
+    @GetMapping("/{id}/similar")
+    public List<SimilarComplaintResponse> similar(@PathVariable Long id) {
+        return service.findSimilar(id);
+    }
 }

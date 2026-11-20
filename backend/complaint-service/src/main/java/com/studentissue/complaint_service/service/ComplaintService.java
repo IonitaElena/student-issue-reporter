@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ComplaintService {
@@ -28,20 +30,25 @@ public class ComplaintService {
 
     private final ComplaintRepository repository;
     private final StatusHistoryRepository historyRepository;
+    private final AiClient aiClient;
 
-    public ComplaintService(ComplaintRepository repository, StatusHistoryRepository historyRepository) {
+    public ComplaintService(ComplaintRepository repository, StatusHistoryRepository historyRepository,
+                            AiClient aiClient) {
         this.repository = repository;
         this.historyRepository = historyRepository;
+        this.aiClient = aiClient;
     }
 
     @Transactional
     public ComplaintResponse create(Long userId, String email, CreateComplaintRequest req) {
+        String text = req.title().trim() + ". " + req.description().trim();
+
         Complaint complaint = Complaint.builder()
                 .title(req.title().trim())
                 .description(req.description().trim())
                 .category(req.category())
                 .status(Status.NEW)
-                .priority(Priority.MEDIUM)   // mai târziu o estimează AI Service
+                .priority(estimatePriority(text))
                 .userId(userId)
                 .faculty(extractFaculty(email))
                 .dormitory(req.dormitory())
@@ -61,6 +68,21 @@ public class ComplaintService {
                 .build());
 
         return ComplaintResponse.from(complaint);
+    }
+
+    /** Prioritatea o dă AI Service-ul; dacă e oprit sau răspunde ciudat, rămâne MEDIUM. */
+    private Priority estimatePriority(String text) {
+        return aiClient.priority(text, 0)
+                .map(r -> r.get("priority"))
+                .map(Object::toString)
+                .map(p -> {
+                    try {
+                        return Priority.valueOf(p);
+                    } catch (IllegalArgumentException e) {
+                        return Priority.MEDIUM;
+                    }
+                })
+                .orElse(Priority.MEDIUM);
     }
 
     @Transactional
@@ -140,6 +162,38 @@ public class ComplaintService {
     public List<ComplaintResponse> getMine(Long userId) {
         return repository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(ComplaintResponse::from).toList();
+    }
+
+    public List<SimilarComplaintResponse> findSimilar(Long id) {
+        Complaint c = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sesizare inexistentă"));
+
+        List<Complaint> others = repository.findTop200ByStatusInAndIdNotOrderByCreatedAtDesc(
+                List.of(Status.NEW, Status.IN_PROGRESS), id);
+
+        Map<Long, Complaint> byId = new HashMap<>();
+        List<Map<String, Object>> candidates = new ArrayList<>();
+        for (Complaint o : others) {
+            byId.put(o.getId(), o);
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", o.getId());
+            m.put("text", o.getTitle() + ". " + o.getDescription());
+            m.put("latitude", o.getLatitude());
+            m.put("longitude", o.getLongitude());
+            candidates.add(m);
+        }
+
+        return aiClient.duplicates(c.getTitle() + ". " + c.getDescription(),
+                        c.getLatitude(), c.getLongitude(), candidates).stream()
+                .map(d -> {
+                    Complaint o = byId.get(((Number) d.get("id")).longValue());
+                    Number dist = (Number) d.get("distanceMeters");
+                    return new SimilarComplaintResponse(
+                            o.getId(), o.getTitle(), o.getStatus().name(),
+                            ((Number) d.get("similarity")).doubleValue(),
+                            dist == null ? null : dist.intValue());
+                })
+                .toList();
     }
 
     private void requireAdmin(String role) {

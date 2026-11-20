@@ -209,6 +209,7 @@ JWT-ul conține: `sub` (email), `userId`, `role`, `iat`, `exp` (valabil 24 h).
 | GET | `/api/complaints/{id}` | token | detaliile unei sesizări |
 | PATCH | `/api/complaints/{id}/status` | `ADMIN` | schimbă statusul și, opțional, departamentul |
 | GET | `/api/complaints/{id}/history` | token | istoricul modificărilor de status |
+| GET | `/api/complaints/{id}/similar` | Plângeri deschise similare (AI, ≤ 300 m) |
 
 Exemplu `POST /api/complaints`:
 
@@ -311,6 +312,30 @@ Structura codului (`backend/complaint-service`): `model` (entități și enum-ur
 | `V5__add_complaint_location.sql` | coloana `location` (PostGIS) și indexul GiST |
 
 Serviciul nu folosește Spring Security: identitatea (`X-User-Id`, `X-User-Email`, `X-User-Role`) vine din headerele puse de gateway, iar rolul `ADMIN` este verificat în logica de business.
+
+## AI Service (port 8083)
+
+Serviciu Python (FastAPI + scikit-learn) pentru clasificare, prioritizare și detectarea duplicatelor.
+
+| Metodă | Endpoint | Descriere |
+|--------|----------|-----------|
+| POST | `/classify` | Categoria prezisă, încredere și top 3 |
+| POST | `/priority` | Prioritate: model ML + cuvinte-cheie + voturi |
+| POST | `/duplicates` | Plângeri similare (text + distanță ≤ 300 m) |
+| GET | `/health` | Stare |
+
+**Model:** TF-IDF (caractere + cuvinte) + regresie logistică, antrenat pe `data/complaints_ro.csv` (set sintetic, 187 exemple). Acuratețe cross-validation: ~62% categorie, ~48% prioritate. Prioritatea finală combină modelul cu reguli pe cuvinte-cheie; voturile o ridică până la HIGH.
+
+**Rulare** (din `backend/ai-service`):
+```bash
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python train.py
+uvicorn app:app --port 8083
+```
+
+Complaint Service apelează AI Service la crearea plângerii (prioritate) și la `GET /api/complaints/{id}/similar`. Dacă AI Service e oprit, plângerea se salvează cu prioritate `MEDIUM`.
 
 ## Testare cu Postman
 

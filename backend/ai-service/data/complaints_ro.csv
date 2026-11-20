@@ -1,0 +1,188 @@
+text,category,priority
+"Am cerut o adeverință de student la secretariat acum trei săptămâni și încă nu am primit-o, iar am nevoie de ea pentru abonamentul de metrou.",ADMINISTRATIVE,MEDIUM
+"Bursa de merit pe luna octombrie nu a fost virată, deși pe studenti.pub.ro apar listele afișate. Cui mă pot adresa?",ADMINISTRATIVE,HIGH
+"secretariatul are program doar 2 ore pe zi si se formeaza cozi uriase, nu se poate rezolva nimic fara sa pierzi o dimineata",ADMINISTRATIVE,MEDIUM
+"Orarul semestrului a fost modificat de două ori fără nicio notificare, am aflat de schimbare când am ajuns la curs.",ADMINISTRATIVE,MEDIUM
+"Taxa de școlarizare a fost calculată greșit, apare o sumă mai mare decât cea din contract. Am încercat să sun la contabilitate, nu răspunde nimeni.",ADMINISTRATIVE,HIGH
+"Legitimația de student nu a fost vizată pe acest semestru și nu o pot folosi la transport.",ADMINISTRATIVE,MEDIUM
+"Cererea pentru bursă socială a fost respinsă fără motiv și nu am primit nicio explicație scrisă.",ADMINISTRATIVE,HIGH
+"Am nevoie urgent de o adeverință pentru depunerea dosarului de practică, termenul e mâine, iar secretariatul e închis.",ADMINISTRATIVE,HIGH
+"Pe site-ul facultății programul de la secretariat este diferit față de cel afișat pe ușă.",ADMINISTRATIVE,LOW
+"Nu mi s-a recunoscut în foaia matricolă o materie promovată anul trecut.",ADMINISTRATIVE,HIGH
+"Nu am primit încă diploma de licență, au trecut 8 luni de la absolvire.",ADMINISTRATIVE,MEDIUM
+"as vrea sa stiu cand se afiseaza repartitia pe grupe, nimeni nu stie nimic si nu e anuntat nicaieri",ADMINISTRATIVE,LOW
+"Formularul de înscriere la examenul de licență cere un document care nu se mai eliberează. Cum procedez?",ADMINISTRATIVE,MEDIUM
+"Contractul de studii a fost încărcat greșit cu numele altei persoane.",ADMINISTRATIVE,MEDIUM
+"Programul de eliberare a carnetelor de student se suprapune cu orele de curs, nu ajungem niciodată.",ADMINISTRATIVE,LOW
+"Am plătit taxa de reexaminare, dar chitanța nu apare în sistem și nu mă lasă să mă înscriu la examen.",ADMINISTRATIVE,HIGH
+"Decontarea transportului pentru bursa de performanță nu a fost făcută de trei luni.",ADMINISTRATIVE,MEDIUM
+"Nu am găsit regulamentul pe site, cine poate confirma dacă am dreptul la gratuitate pentru al doilea an?",ADMINISTRATIVE,LOW
+"Adresa de email instituțională nu mi-a fost activată, deși sunt înmatriculat de o lună.",ADMINISTRATIVE,MEDIUM
+"Cozile la casierie pentru plata taxelor sunt de peste o oră.",ADMINISTRATIVE,LOW
+"orarul de la anul 2 nu este afisat si incepem cursurile luni",ADMINISTRATIVE,MEDIUM
+"Documentele pentru Erasmus au fost pierdute la birou și trebuie să le refac, termenul de depunere expiră vineri.",ADMINISTRATIVE,HIGH
+"Nu primesc răspuns la emailurile trimise către secretariat de două săptămâni.",ADMINISTRATIVE,MEDIUM
+"Acordul de practică semnat nu a fost înregistrat și nu pot începe stagiul.",ADMINISTRATIVE,MEDIUM
+"Numele meu apare scris greșit în baza de date și pe toate documentele, aș vrea să fie corectat.",ADMINISTRATIVE,LOW
+"Taxa pentru cămin apare dublată în extrasul de cont și nimeni nu îmi spune cum o recuperez.",ADMINISTRATIVE,MEDIUM
+"Cererea de transfer între facultăți așteaptă aprobare de două luni.",ADMINISTRATIVE,MEDIUM
+"Lipsesc indicatoarele către secretariat în corp, studenții noi se rătăcesc.",ADMINISTRATIVE,LOW
+"Condițiile de acordare a burselor au fost modificate după începerea semestrului, fără niciun anunț.",ADMINISTRATIVE,MEDIUM
+"La secretariat mi s-a spus că dosarul e incomplet, dar nu mi-au spus ce lipsește.",ADMINISTRATIVE,MEDIUM
+"Aș vrea ca formularele să poată fi depuse online, nu doar la ghișeu.",ADMINISTRATIVE,LOW
+"Nu pot descărca foaia matricolă de pe studenti.pub.ro, primesc o eroare la fiecare încercare.",ADMINISTRATIVE,MEDIUM
+"Plata taxei de înscriere nu a fost înregistrată, deși am dovada plății, iar termenul se închide mâine.",ADMINISTRATIVE,HIGH
+"Cererea de înmatriculare tardivă a fost respinsă cu un motiv care nu apare nicăieri în regulament.",ADMINISTRATIVE,HIGH
+"Proiectorul din sala EC 105 nu mai pornește de două săptămâni, iar cursurile se țin fără suport vizual.",INFRASTRUCTURE,MEDIUM
+"In amfiteatrul AN 031 aerul conditionat nu functioneaza si temperatura trece de 30 de grade, e imposibil sa te concentrezi.",INFRASTRUCTURE,MEDIUM
+"Liftul din corpul ED este blocat între etaje de ieri, iar studenții cu dizabilități nu pot ajunge la laboratoare.",INFRASTRUCTURE,HIGH
+"Din tavanul de la etajul 2 al corpului CA s-au desprins bucăți de tencuială peste băncile din amfiteatru. Este periculos.",INFRASTRUCTURE,URGENT
+"În laboratorul EG 204 din prize ies scântei când conectăm calculatoarele, am oprit lucrul din motive de siguranță.",INFRASTRUCTURE,URGENT
+"Wifi-ul din Corpul A de la Leu cade în fiecare oră și nu mai putem accesa platformele în timpul laboratoarelor.",INFRASTRUCTURE,MEDIUM
+"Toaletele de la parterul corpului EH sunt închise de o săptămână și nu mai sunt altele la îndemână.",INFRASTRUCTURE,HIGH
+"Nu este lumină pe holul dintre corpurile B și F de la Leu seara, sunt mai multe becuri arse.",INFRASTRUCTURE,MEDIUM
+"Băncile din sala JA 12 sunt rupte, trei se clatină și un scaun nu mai are spătar.",INFRASTRUCTURE,LOW
+"Rampa de acces pentru persoane cu dizabilități de la intrarea în Biblioteca Centrală este blocată de un gard.",INFRASTRUCTURE,HIGH
+"geamul de la sala CB 104 e spart si bate vantul, iarna e frig rau, nu se poate sta la ore",INFRASTRUCTURE,MEDIUM
+"Am simțit miros de gaz pe holul de lângă laboratorul de chimie din Polizu, corpul C. Cineva trebuie să verifice imediat.",INFRASTRUCTURE,URGENT
+"Caloriferele din amfiteatrul EN 101 sunt reci de la începutul lunii, studenții stau cu hainele de iarnă pe ei.",INFRASTRUCTURE,HIGH
+"Tabla interactivă din sala FA 203 are ecranul crăpat și nu mai răspunde la atingere.",INFRASTRUCTURE,MEDIUM
+"Scara de la intrarea în corpul CE are trepte crăpate și o balustradă desprinsă. Cineva se poate accidenta grav.",INFRASTRUCTURE,URGENT
+"Toaletele din corpul ED nu au săpun și hârtie igienică de două săptămâni.",INFRASTRUCTURE,MEDIUM
+"Aparatul de copiat de la Biblioteca Centrală nu funcționează și nu se poate scana nimic.",INFRASTRUCTURE,LOW
+"Laboratorul de rețele nu are suficiente prize, studenții își conectează laptopurile la prelungitoare pe jos.",INFRASTRUCTURE,MEDIUM
+"Cheia de la sala de curs CF 102 nu se găsește la portar, am pierdut 20 de minute din ora de curs.",INFRASTRUCTURE,LOW
+"Plafonul de la etajul 1 din corpul FB are infiltrații și picură apă pe podea de fiecare dată când plouă.",INFRASTRUCTURE,HIGH
+"Iluminatul din parcarea de la Polizu nu funcționează seara, e foarte întuneric.",INFRASTRUCTURE,MEDIUM
+"Microfonul din amfiteatrul AN 031 nu funcționează, în ultimele rânduri nu se aude nimic.",INFRASTRUCTURE,LOW
+"Ușa de evacuare a sălii EG 303 este încuiată cu lacăt în timpul orelor, nu poate ieși nimeni în caz de incendiu.",INFRASTRUCTURE,URGENT
+"Calculatoarele din laboratorul EC 202 sunt foarte vechi și durează zece minute să pornească, nu putem lucra la proiecte.",INFRASTRUCTURE,MEDIUM
+"Iarba și aleile de lângă corpul B de la Leu sunt neîngrijite, iar gazonul nu a mai fost tuns de luni de zile.",INFRASTRUCTURE,LOW
+"In corp CH nu exista nicio toaleta adaptata persoanelor cu dizabilitati.",INFRASTRUCTURE,MEDIUM
+"Ventilația din laboratorul de chimie nu funcționează și se simte un miros puternic de solvenți după experimente.",INFRASTRUCTURE,HIGH
+"Mocheta din sala JE 105 este ruptă și mai multe persoane s-au împiedicat.",INFRASTRUCTURE,MEDIUM
+"Plafoniera de pe holul de la etajul 3, corpul EN, a căzut parțial și atârnă de un fir.",INFRASTRUCTURE,HIGH
+"La sala de sport de la Leu dușurile sunt defecte și nu există apă caldă.",INFRASTRUCTURE,MEDIUM
+"Mai multe prize din amfiteatrul EH sunt desprinse din perete și firele sunt la vedere.",INFRASTRUCTURE,URGENT
+"Panourile de afișaj din holul facultății sunt murdare și nu se mai înțelege nimic din anunțuri.",INFRASTRUCTURE,LOW
+"uscatorul de maini din baia de la etajul 2 face scantei si miroase a ars",INFRASTRUCTURE,URGENT
+"Videoproiectorul din sala CJ 14 are lentila murdară și imaginea e încețoșată.",INFRASTRUCTURE,LOW
+"Un copac uscat de lângă Rectorat pare să cadă peste alee, mai ales când bate vântul.",INFRASTRUCTURE,HIGH
+"Zgomot puternic de la o instalație de ventilație din subsolul corpului EC, se aude în toate sălile de la parter.",INFRASTRUCTURE,MEDIUM
+"Platforma curs.upb.ro nu a funcționat toată ziua, iar testul de la ora 14:00 nu a putut fi dat.",ACADEMIC,HIGH
+"Profesorul a lipsit la ultimele trei cursuri fără nicio informare și nu s-a recuperat nimic.",ACADEMIC,MEDIUM
+"Notele de la examenul de Analiză Matematică nu au fost afișate deși a trecut o lună și jumătate.",ACADEMIC,MEDIUM
+"Am depus contestație la nota de la examen, dar nu am primit nicio rezolvare și termenul a trecut.",ACADEMIC,HIGH
+"Bibliografia de la curs este indisponibilă la bibliotecă și nu există variantă electronică.",ACADEMIC,LOW
+"Examenele de la două materii sunt programate la aceeași oră, nu pot fi prezent la amândouă.",ACADEMIC,HIGH
+"La laboratorul de PC nu am putut face lucrările deoarece calculatoarele nu aveau softul necesar instalat.",ACADEMIC,MEDIUM
+"Teams-ul se blochează în timpul examenului online și mulți colegi au pierdut răspunsurile.",ACADEMIC,HIGH
+"Cursul de Programare Orientată pe Obiecte are materiale învechite, exemplele nu mai funcționează cu versiunea actuală.",ACADEMIC,LOW
+"Punctajul din catalog nu coincide cu cel din lucrarea mea corectată, lipsesc 15 puncte.",ACADEMIC,HIGH
+"Profesorul nu răspunde la emailurile noastre și nu ne spune cum se calculează nota finală.",ACADEMIC,MEDIUM
+"Cerințele proiectului au fost schimbate cu două zile înainte de termen.",ACADEMIC,MEDIUM
+"nu se mai pot incarca temele pe curs.upb.ro, da eroare 500, termenul expira la miezul noptii",ACADEMIC,HIGH
+"Cursul a fost mutat online fără anunț și am ajuns degeaba în amfiteatru.",ACADEMIC,LOW
+"Laboratorul de Fizică se desfășoară cu o singură aparatură pentru 30 de studenți, nu avem cum să lucrăm toți.",ACADEMIC,MEDIUM
+"Examenul oral a durat zece minute, iar profesorul nu a dat nicio explicație la nota primită.",ACADEMIC,MEDIUM
+"Slide-urile de curs nu sunt puse pe platformă, singura variantă e să le fotografiem de la proiector.",ACADEMIC,LOW
+"Testul grilă a conținut întrebări din capitole care nu au fost predate la curs.",ACADEMIC,HIGH
+"Ora de seminar a fost anulată de patru ori și nu s-a recuperat, nu avem prezență suficientă pentru examen.",ACADEMIC,MEDIUM
+"Examenul de restanță nu a fost anunțat pe nicio platformă, am aflat de la un coleg cu o zi înainte.",ACADEMIC,HIGH
+"Notarea la proiect nu are criterii clare, fiecare profesor de laborator evaluează diferit.",ACADEMIC,MEDIUM
+"Cursul din modulul opțional a fost înlocuit cu altul fără să fim întrebați, iar noul curs are altă materie.",ACADEMIC,MEDIUM
+"Licența pentru software-ul de simulare de la laborator a expirat, nu putem rula proiectele.",ACADEMIC,HIGH
+"Nu avem acces la bazele de date științifice din afara rețelei UPB, deși am VPN configurat.",ACADEMIC,LOW
+"Prezența la laborator este obligatorie, dar sala se încuie la 10 minute după începerea orei.",ACADEMIC,LOW
+"Subiectele de examen au fost diferite între serii, la una extrem de grele față de cealaltă.",ACADEMIC,MEDIUM
+"Cursul de Algoritmi nu are nicio înregistrare disponibilă, deși profesorul a promis că le pune online.",ACADEMIC,LOW
+"in sesiune s-a copiat pe fata intr-o sala fara supraveghere, nu e corect fata de cei care au invatat",ACADEMIC,HIGH
+"Programul de consultații al profesorului coincide cu orele noastre de curs, nu avem când să-l întrebăm.",ACADEMIC,LOW
+"Lucrarea mea a fost pierdută de profesor și mi se spune să o refac la un nou termen.",ACADEMIC,HIGH
+"Un profesor ne-a spus că materia din ultimele două cursuri nu intră la examen, iar în subiecte a fost inclusă.",ACADEMIC,HIGH
+"Anunțurile despre examene apar doar pe un grup de WhatsApp, nu și pe platformele oficiale.",ACADEMIC,MEDIUM
+"La cantină s-a servit mâncare rece și aproape crudă, mai mulți colegi s-au simțit rău după aceea.",SOCIAL,HIGH
+"Cozile la cantina Leu sunt de aproape o oră în pauza de prânz, nu mai apucăm să mâncăm.",SOCIAL,MEDIUM
+"Meniul de la cantină nu are nicio opțiune vegetariană.",SOCIAL,LOW
+"Autobuzul care duce spre Polizu vine foarte rar și e mereu aglomerat dimineața.",SOCIAL,MEDIUM
+"Pe aleea dintre corpuri nu este iluminat seara și două colege au fost urmărite ieri.",SOCIAL,URGENT
+"La baza sportivă terenul de baschet are plasa ruptă și panoul e slăbit.",SOCIAL,MEDIUM
+"Un coleg este hărțuit constant de un grup din an, iar profesorul a observat dar nu a intervenit.",SOCIAL,URGENT
+"Nu există suficiente evenimente pentru studenții din anul 1, nu cunoaștem pe nimeni.",SOCIAL,LOW
+"Cabinetul de consiliere psihologică are programări doar peste două luni.",SOCIAL,HIGH
+"Organizarea balului bobocilor a fost haotică și locul nu a fost anunțat decât cu o oră înainte.",SOCIAL,LOW
+"Preturile de la cantina au crescut cu 30 la suta fara nicio anuntare.",SOCIAL,MEDIUM
+"Sala de fitness din campus este deschisă doar între 10 și 14, când toată lumea are ore.",SOCIAL,LOW
+"Bicicletele sunt furate din fața corpurilor, nu există parcare supravegheată.",SOCIAL,MEDIUM
+"Pe campus sunt mulți câini fără stăpân care au atacat doi studenți săptămâna aceasta.",SOCIAL,HIGH
+"Nu există reduceri pentru studenți la abonamentul pentru autobuzul care ajunge la Polizu.",SOCIAL,LOW
+"Colegii noștri străini sunt discriminați verbal de un grup și nu știm unde putem raporta.",SOCIAL,HIGH
+"Petrecerile studențești din parcarea campusului se aud până la miezul nopții.",SOCIAL,MEDIUM
+"Studenții cu dizabilități nu au un punct de contact pentru nevoile speciale.",SOCIAL,HIGH
+"Asociația studenților nu răspunde la solicitările de sprijin pentru cazurile sociale.",SOCIAL,MEDIUM
+"La sala de sport se închid dușurile la ora 19, iar noi terminăm antrenamentul la 20.",SOCIAL,LOW
+"Nu avem un loc unde să mâncăm un sandviș între cursuri, iar afară este frig.",SOCIAL,LOW
+"Se vinde alcool în fața porții campusului și în jurul orei 22 sunt scandaluri.",SOCIAL,MEDIUM
+"Voluntariatul este promovat doar printre studenții din anumite facultăți.",SOCIAL,LOW
+"Ar fi nevoie de un microbuz de la metrou la corpurile din Polizu pentru cei care au bagaje.",SOCIAL,LOW
+"Autobuzul pentru studenți nu mai circulă seara și nu avem cum să ajungem la cămin.",SOCIAL,MEDIUM
+"Mâncarea de la cantină conține resturi de plastic, am găsit un fragment în supă.",SOCIAL,HIGH
+"Coada la farmacia studențească din campus este interminabilă, iar programul e scurt.",SOCIAL,LOW
+"Un student a leșinat în amfiteatru și nu exista nicio trusă de prim ajutor la îndemână.",SOCIAL,URGENT
+"În căminul P5 nu avem apă caldă de patru zile, iar în cameră sunt 12 grade.",DORMITORY,HIGH
+"Caloriferele din căminul P12 nu funcționează în tot blocul, iar afară sunt sub zero grade.",DORMITORY,HIGH
+"În baia camerei P3-214 curge apă prin tavan de la etajul de deasupra și a apărut mucegai.",DORMITORY,HIGH
+"Avem gândaci în cameră la căminul P22 și nu s-a făcut deratizare de la începutul semestrului.",DORMITORY,MEDIUM
+"Liftul din Leu A este blocat de trei zile, iar la etajul 8 e foarte greu cu bagajele.",DORMITORY,MEDIUM
+"Prizele din camera P7-118 scot scântei și mirosul de ars se simte pe tot holul.",DORMITORY,URGENT
+"Internetul din căminul P14 nu merge deloc de o săptămână, iar noi avem de dat proiecte.",DORMITORY,MEDIUM
+"Băile comune de pe palier la P27 sunt murdare și nu au fost curățate de trei zile.",DORMITORY,MEDIUM
+"usa camerei nu se mai inchide cu cheia si nu avem unde sa lasam laptopurile, caminul P16",DORMITORY,HIGH
+"Geamurile din camera mea de la Leu C nu se mai închid și bate vântul, noaptea e foarte frig.",DORMITORY,HIGH
+"Lipsește iluminatul de pe scara de la P9, iar în întuneric cineva poate cădea.",DORMITORY,HIGH
+"Un șoarece a fost văzut în bucătăria comună de la P20, este nevoie de intervenție.",DORMITORY,HIGH
+"Portarul de la căminul P18 lasă să intre persoane străine fără să ceară legitimația.",DORMITORY,HIGH
+"Mașinile de spălat din subsolul căminului P10 sunt defecte, trebuie să mergem la alt cămin.",DORMITORY,MEDIUM
+"Scurgerea de la lavoarul din camera P24-305 nu se mai oprește și a inundat podeaua.",DORMITORY,HIGH
+"Zgomotul de la etajul de deasupra, la P11, durează până dimineața în fiecare noapte.",DORMITORY,MEDIUM
+"Salteaua mea este foarte veche și are arcurile rupte, mi-au apărut dureri de spate. Cămin P15.",DORMITORY,MEDIUM
+"Căminul Leu D nu are apă deloc de dimineață, nimeni nu ne spune când se rezolvă.",DORMITORY,HIGH
+"Toaletele de pe etajul 3 din P13 sunt înfundate și se revarsă pe hol.",DORMITORY,HIGH
+"Factura la curent din cămin a crescut dublu fără nicio explicație.",DORMITORY,MEDIUM
+"Dușurile de la P21 au doar apă rece după ora 9 seara.",DORMITORY,MEDIUM
+"Mirosul de gaz din bucătăria de pe etajul 2 de la P4 a fost semnalat de mai mulți colegi.",DORMITORY,URGENT
+"Hoții au intrat în camera mea în timpul zilei, ușa nu avea nicio urmă de forțare. Căminul P6.",DORMITORY,HIGH
+"Repartiția camerelor s-a făcut fără să se țină cont de cererile de a sta cu colegii de grupă.",DORMITORY,LOW
+"Cheia de la camera P8-110 a fost pierdută și mi se cere o taxă de 200 de lei pentru schimbarea yalei.",DORMITORY,MEDIUM
+"Perdelele din camera de la Leu A sunt rupte și soarele ne încinge camera dimineața.",DORMITORY,LOW
+"Se aud șoareci prin pereți în căminul P25, mai ales noaptea.",DORMITORY,MEDIUM
+"Nu avem suficiente prize în camera de 4 locuri de la P2, folosim prelungitoare.",DORMITORY,LOW
+"Ușa de incendiu de la capătul holului din P19 este blocată cu mobilier vechi.",DORMITORY,URGENT
+"Căminul P23 nu are bucătărie funcțională pe etajul 4, plitele sunt stricate.",DORMITORY,MEDIUM
+"Paznicul de noapte de la Leu C doarme și nu răspunde la sonerie, am stat afară o oră.",DORMITORY,HIGH
+"Pe pereții camerei P26 a apărut mucegai negru și respirăm greu.",DORMITORY,HIGH
+"Nu avem apă potabilă la etajul nostru, doar din robinetul băii comune, care curge gălbuie.",DORMITORY,HIGH
+"regulamentul de camin interzice musafirii, dar la P17 vin petreceri in fiecare weekend",DORMITORY,LOW
+"Instalația de încălzire din cămin face zgomote puternice toată noaptea.",DORMITORY,LOW
+"Mi s-a cerut să părăsesc camera în 24 de ore fără nicio notificare scrisă. Cămin P1.",DORMITORY,HIGH
+"Mi-am pierdut o umbrelă neagră în amfiteatrul AN 031 miercuri după-amiază, dacă a găsit-o cineva.",OTHER,LOW
+"Ar fi bine ca aplicația să aibă și mod întunecat.",OTHER,LOW
+"salut, nu stiu unde sa trimit aceasta sesizare, poate ma ajutati",OTHER,LOW
+"Am găsit un portofel pe aleea din fața Bibliotecii Centrale. Cui îl predau?",OTHER,LOW
+"Sugerez organizarea unui târg de cărți second-hand în campus.",OTHER,LOW
+"Ar fi util un calendar cu toate evenimentele din campus într-un singur loc.",OTHER,LOW
+"Vreau să mulțumesc echipei care a reparat repede iluminatul de pe alee.",OTHER,LOW
+"Aplicația nu îmi trimite notificări pe telefon.",OTHER,LOW
+"Un șantier din afara campusului produce praf și zgomot mare dimineața.",OTHER,MEDIUM
+"Mașina parcată în fața porții blochează accesul de mai multe zile.",OTHER,MEDIUM
+"Nu știu dacă aceasta este categoria potrivită, dar am nevoie de ajutor.",OTHER,LOW
+"Cer clarificări despre cum pot deveni voluntar în organizația studențească.",OTHER,LOW
+"Aș dori să organizez o expoziție foto în holul facultății, cui mă adresez?",OTHER,LOW
+"Autoritățile locale nu au curățat zăpada de pe trotuarul din fața campusului.",OTHER,MEDIUM
+"Testez aplicația, vă rog ignorați acest mesaj.",OTHER,LOW
+"Am observat o greșeală de scriere pe site-ul universității la pagina despre burse.",OTHER,LOW
+"Aș vrea să propun un parteneriat cu o firmă pentru stagii de practică.",OTHER,LOW
+"Un vecin din blocul de lângă campus aruncă gunoaie în curtea universității.",OTHER,LOW
+"Semaforul de la trecerea de pietoni din fața porții nu funcționează, este periculos.",OTHER,HIGH
+"Ar fi bine să existe o aplicație pentru găsirea colegilor de proiect.",OTHER,LOW
+"O groapă mare pe strada din fața intrării strică mașinile care trec, nu este în curtea universității.",OTHER,MEDIUM
